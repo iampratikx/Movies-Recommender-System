@@ -1,13 +1,9 @@
 import pickle
-import os
 import pandas as pd
 import streamlit as st
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-
-TMDB_API_KEY = os.getenv("TMDB_API_KEY")
-
 
 # --- 1. SETUP RETRY LOGIC ---
 session = requests.Session()
@@ -20,10 +16,7 @@ session.mount('https://', HTTPAdapter(max_retries=retries))
 
 def fetch_poster(movie_id):
     try:
-        if not TMDB_API_KEY:
-            return "https://via.placeholder.com/500x750?text=API+Key+Missing"
-
-        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_API_KEY}&language=en-US"
+        url = "https://api.themoviedb.org/3/movie/{}?api_key=68dc896b125af39c30c3f528c26ea323&language=en-US".format(movie_id)
         response = session.get(url, timeout=10)
         data = response.json()
         poster_path = data.get('poster_path')
@@ -34,7 +27,6 @@ def fetch_poster(movie_id):
             return "https://via.placeholder.com/500x750?text=No+Poster+Found"
     except Exception:
         return "https://via.placeholder.com/500x750?text=Connection+Error"
-
 
 def recommend(movie):
     movie_index = movies[movies['title'] == movie].index[0]
